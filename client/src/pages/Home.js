@@ -59,10 +59,8 @@ class Home extends Component {
     }
   }
 
-  callVoteSmart = (query) => {
-    return API.apiVoteSmart(query)
-  };
-
+  // API Methods
+  
   callCivic = () => {
     const address = `${this.state.line1} ${this.state.city} ${this.state.state} ${this.state.zip}`
     // Get polling location address
@@ -86,7 +84,7 @@ class Home extends Component {
       .catch(err => console.log(err));
   };
 
-  testListenNotes = event => {
+  callListenNotes = event => {
     API.apiListenNotes()
     .then(result => {
       console.log(`Listen Notes result: `, result)
@@ -97,15 +95,20 @@ class Home extends Component {
     .catch(err => console.log(err));
   };
 
-  // Get polling & candidate info
-  getInfo = () => {
-    this.callCivic();
-    this.getCandidates(this.state.zip, this.stageId, this.electionYear)
-    .then(res => {
-      if (res.data.candidateList.candidate.length) {
-        this.parseCandidates(res.data.candidateList.candidate)
-      }
-    })
+  callVoteSmart = (query) => {
+    return API.apiVoteSmart(query)
+  };
+
+  // Voter Candidate/Polling Methods
+
+  // Return an array of candidates for a specific contest (i.e. Senate) - Used with Google Civic API
+  filterByContest = (contest) => {
+    return ( contest.office.indexOf( this.state.contest ) > -1 )
+  }
+
+  // Return an array of candidates for a specific contest (i.e. Senate) - Used with VoteSmart API
+  filterByOfficeId = (contest) => {
+    return (contest.electionOfficeId === this.state.officeId)
   }
 
   // Get candidates by zip code from VoteSmart API
@@ -115,6 +118,50 @@ class Home extends Component {
       params: { zip5: zip, stageId: stageId, electionYear: electionYear }
     }
     return this.callVoteSmart(query)
+  }
+
+  // Get Candidate Bio using VoteSmart API
+  getCandidateBio = (candidateId) => {
+    const query = {
+      command: "CandidateBio.getBio",
+      params: { candidateId: candidateId }
+    }
+    return this.callVoteSmart(query)
+  }
+
+  // Get candidates by office - display an individual contest - used with VoteSmart API
+  getCandidateByOffice = () => {
+    const arr = this.candidates.filter(this.filterByOfficeId)
+    if (arr.length) {
+      this.getDistrictIds(arr);
+      this.setState({contest:arr});
+      this.setState({message: ""}); // Clear message
+    }
+    else {
+      this.setState({ message: `Contest not on ballot` });
+      this.setState({contest: []}) // Clear contest array
+    }
+  }
+
+  // Get a list of individual elections by district
+  // Return an array with unique Office Ids (in a district there may be 2 contest i.e. 2 Senate Races)
+  getDistrictIds = (contest) => {
+    const districts = contest.map(district => {
+      return (district.electionDistrictId)
+    })
+    // Remove duplicates from array
+    this.uniqueDistricts = this.arrayUnique(districts);
+  }
+
+  // Get polling & candidate info
+  getInfo = () => {
+    this.callCivic();
+    this.getCandidates(this.state.zip, this.stageId, this.electionYear)
+    .then(res => {
+      if (res.data.candidateList.candidate.length) {
+        this.parseCandidates(res.data.candidateList.candidate)
+      }
+    })
   }
 
   // Parse response from VoteSmart API into object
@@ -148,18 +195,17 @@ class Home extends Component {
     return Promise.all(pCandidates).then(data => {
       // Remove duplicates & save the candidate list to local variable
       this.candidates = data.filter((object,index) => index === data.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object)));
-      this.candidateByOffice()
+      this.getCandidateByOffice()
     })
   }
 
-  // Get Candidate Bio using VoteSmart API
-  getCandidateBio = (candidateId) => {
-    const query = {
-      command: "CandidateBio.getBio",
-      params: { candidateId: candidateId }
-    }
-    return this.callVoteSmart(query)
+  // Google API candidate list - For future use to harvest more candidate info
+  testCandidate = (event) => {
+    const contestArr = this.state.contests.filter(this.filterByContest)
+    console.log(`contestArr: `, contestArr)
   }
+
+  // Voter/User Methods
 
   // Find voter by id
   getVoter = (id) => {
@@ -200,6 +246,14 @@ class Home extends Component {
     return API.updateVoter(this._id, voterObj)
   }
 
+  // Podcast Methods
+
+  // Remove podcast from voter's podcast list
+  removePodcast = id => {
+    API.removePodcast(id,this._id)
+      .then(voterDB => this.setState({savedPodcasts:voterDB.data.podcasts}))
+  }
+
   // Save podcast to Podcasts collection, and push on to voter's list of saved podcasts
   savePodcast = podcastObj => {
     // Save podcast, pass voter._id to save to voter document
@@ -211,21 +265,7 @@ class Home extends Component {
       })
   }
 
-  // Remove podcast from voter's podcast list
-  removePodcast = id => {
-    API.removePodcast(id,this._id)
-      .then(voterDB => this.setState({savedPodcasts:voterDB.data.podcasts}))
-  }
-
-  // Return an array of candidates for a specific contest (i.e. Senate) - Used with Google Civic API
-  filterByContest = (contest) => {
-    return ( contest.office.indexOf( this.state.contest ) > -1 )
-  }
-
-  // Return an array of candidates for a specific contest (i.e. Senate) - Used with VoteSmart API
-  filterByOfficeId = (contest) => {
-    return (contest.electionOfficeId === this.state.officeId)
-  }
+  // Functional Methods
 
   // Remove duplicates from array
   arrayUnique = function (arr) {
@@ -234,36 +274,6 @@ class Home extends Component {
     });
   };
 
-  // Get a list of individual elections by district
-  // Return an array with unique Office Ids (in a district there may be 2 contest i.e. 2 Senate Races)
-  getDistrictIds = (contest) => {
-    const districts = contest.map(district => {
-      return (district.electionDistrictId)
-    })
-    // Remove duplicates from array
-    this.uniqueDistricts = this.arrayUnique(districts);
-  }
-
-  // Get candidates by office - display an individual contest - used with VoteSmart API
-  candidateByOffice = () => {
-    const arr = this.candidates.filter(this.filterByOfficeId)
-    if (arr.length) {
-      this.getDistrictIds(arr);
-      this.setState({contest:arr});
-      this.setState({message: ""}); // Clear message
-    }
-    else {
-      this.setState({ message: `Contest not on ballot` });
-      this.setState({contest: []}) // Clear contest array
-    }
-  }
-
-  // Google API candidate list - For future use to harvest more candidate info
-  testCandidate = (event) => {
-    const contestArr = this.state.contests.filter(this.filterByContest)
-    console.log(`contestArr: `, contestArr)
-  }
-
   handleInputChange = event => {
     if(event.target.name ==='officeId'){
         if (this.state.zip.length === zipLength) {
@@ -271,7 +281,7 @@ class Home extends Component {
         this.setState({
           [name]: value
         },
-        ()=>{this.candidateByOffice()});
+        ()=>{this.getCandidateByOffice()});
       } 
     }else{
       const { name, value } = event.target;
@@ -357,7 +367,7 @@ class Home extends Component {
           <Col s={12} sm={3} md={3} className="newPods">
             <h3 className="text-center">New Podcasts</h3>
             <Button
-              onClick={this.testListenNotes}
+              onClick={this.callListenNotes}
               bsStyle={"danger"}
               className="center-block"
             >
