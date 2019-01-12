@@ -13,6 +13,7 @@ const zipLength = 5;
 class Home extends Component {
   stageId = "G"; // Set to General Election
   username = "";
+  electionYear = 2018;
   _id = "0"; // Can not be null
   candidates = [];
   uniqueDistricts;
@@ -99,7 +100,7 @@ class Home extends Component {
   // Get polling & candidate info
   getInfo = () => {
     this.callCivic();
-    this.getCandidates(this.state.zip, this.stageId)
+    this.getCandidates(this.state.zip, this.stageId, this.electionYear)
     .then(res => {
       if (res.data.candidateList.candidate.length) {
         this.parseCandidates(res.data.candidateList.candidate)
@@ -108,10 +109,10 @@ class Home extends Component {
   }
 
   // Get candidates by zip code from VoteSmart API
-  getCandidates = (zip, stageId) => {
+  getCandidates = (zip, stageId, electionYear) => {
     const query = {
       command: "Candidates.getByZip",
-      params: { zip5: zip, stageId: stageId }
+      params: { zip5: zip, stageId: stageId, electionYear: electionYear }
     }
     return this.callVoteSmart(query)
   }
