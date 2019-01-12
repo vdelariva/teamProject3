@@ -1,14 +1,12 @@
 // Imports
 const axios = require("axios");
 const db = require("../models");
-const parseString = require('xml2js').parseString;
 const keysFile = require("../keys.js");
 var passport = require('passport');
 var settings = require('../config/settings');
 require('../config/passport')(passport);
 var jwt = require('jsonwebtoken');
 var nodemailer = require('nodemailer');
-var ObjectId = require('mongoose').Types.ObjectId;
 var bcrypt = require('bcrypt-nodejs');
 var pageUrl = "/passwordreset/";
 
@@ -21,16 +19,12 @@ module.exports = (app) => {
     let query = `https://api.votesmart.org/${req.query.command}`;
 
     // Convert query.params to an object, combine two objects to create new params object for api query
-    const params = { "key": keysFile.votesmart.key, ...JSON.parse(req.query.params) }
+    const params = { "key": keysFile.votesmart.key, "o":"JSON", ...JSON.parse(req.query.params) }
 
     axios.get(query, {
       params: params
     }
-    ).then(result => {
-      // Convert xml to JSON
-      parseString(result.data, function (err, jsonres) {
-        return res.json(jsonres);
-      })
+    ).then(result => {return res.json(result.data);
     }).catch(err => res.status(422).json(err));
   });
 

@@ -167,27 +167,27 @@ class Home extends Component {
   // Parse response from VoteSmart API into object
   parseCandidates = (candidates) => {
     let pCandidates = candidates.map(candidate => {
-      return this.getCandidateBio(candidate.candidateId[0])
+      return this.getCandidateBio(candidate.candidateId)
         .then(res => {
           const candidateObj = {
-            candidateId: candidate.candidateId[0],
-            ballotName: candidate.ballotName[0],
-            electionParties: candidate.electionParties[0],
-            electionDistrictId: candidate.electionDistrictId[0],
-            electionDistrictName: candidate.electionDistrictName[0],
-            electionOffice: candidate.electionOffice[0],
-            electionOfficeId: candidate.electionOfficeId[0],
-            electionStateId: candidate.electionStateId[0],
-            electionDate: candidate.electionDate[0],
-            runningMateId: candidate.runningMateId[0],
-            runningMateName: candidate.runningMateName[0],
-            birthDate: res.data.bio.candidate[0].birthDate[0],
-            birthPlace: res.data.bio.candidate[0].birthPlace[0],
-            family: res.data.bio.candidate[0].family[0],
-            homeCity: res.data.bio.candidate[0].homeCity[0],
-            homeState: res.data.bio.candidate[0].homeState[0],
-            religion: res.data.bio.candidate[0].religion[0],
-            photo: res.data.bio.candidate[0].photo[0]
+            candidateId: candidate.candidateId,
+            ballotName: candidate.ballotName,
+            electionParties: candidate.electionParties,
+            electionDistrictId: candidate.electionDistrictId,
+            electionDistrictName: candidate.electionDistrictName,
+            electionOffice: candidate.electionOffice,
+            electionOfficeId: candidate.electionOfficeId,
+            electionStateId: candidate.electionStateId,
+            electionDate: candidate.electionDate,
+            runningMateId: candidate.runningMateId,
+            runningMateName: candidate.runningMateName,
+            birthDate: res.data.bio.candidate.birthDate,
+            birthPlace: res.data.bio.candidate.birthPlace,
+            family: res.data.bio.candidate.family,
+            homeCity: res.data.bio.candidate.homeCity,
+            homeState: res.data.bio.candidate.homeState,
+            religion: res.data.bio.candidate.religion,
+            photo: res.data.bio.candidate.photo
           }
           return candidateObj
         })
