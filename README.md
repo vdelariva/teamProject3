@@ -28,6 +28,9 @@ Link to app: [VoteNow](https://immense-wave-55962.herokuapp.com/)
 * Path
 * Yarn
 
+**Database**
+* MongoDB
+
 **APIs**
 * **Google Civic:** Provides polling places, early vote locations, contest data, election officials, and government representatives for U.S. residential addresses.
 * **VoteSmart:** Provides local, state and federal election information, including in-depth candidate information and political courage test responses.
