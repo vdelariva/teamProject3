@@ -26,7 +26,6 @@ Link to app: [VoteNow](https://immense-wave-55962.herokuapp.com/)
 * Nodemailer
 * Passport
 * Path
-* Xml2js
 * Yarn
 
 **APIs**
