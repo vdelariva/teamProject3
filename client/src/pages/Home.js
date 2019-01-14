@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import API from "../utils/API";
+import Address from "../components/Address";
 import SearchForm from "../components/SearchForm";
 import Candidate from "../components/Candidate";
 import Podcast from "../components/Podcast";
@@ -293,7 +294,7 @@ class Home extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.zip.length === zipLength) this.getInfo()
+    this.getInfo();
   };
 
   render() {
@@ -320,18 +321,17 @@ class Home extends Component {
         </Row>
       
         {/* Display Polling Location */}
-        <Row className="newDiv">
+        <Row className="pollLocation">
           <Col s={12} sm={4} md={4}>
-            <div className="pollresults">
-              <h3 className="pollTitle text-center">Your Polling Place:</h3>
-              {this.state.plocationName ? 
-              <p className="text-center ">
-                <b>{this.state.plocationName}:<br /> </b> 
-                {this.state.pline1}<br />
-                {this.state.pcity} {this.state.pstate} {this.state.zip}</p>
-              : 
-                <p className="text-center" >Enter Your Address</p>}
-            </div>
+            <Address
+              title="Your Polling Place:"
+              locationName={this.state.plocationName}
+              line1={this.state.pline1}
+              city={this.state.city}
+              state={this.state.state}
+              zip={this.state.zip}
+              msg="Enter Your Address"
+            ></Address>
           </Col>
         
           {/* Alert & Form to select election contest */}
@@ -345,12 +345,12 @@ class Home extends Component {
               }
             </div>
             <form>
-              <h3 htmlFor="testForm" className="text-center">Select Contest</h3>
+              <h3 htmlFor="officeIdForm" className="text-center">Select Contest</h3>
               <select 
                 value={this.state.officeId}
                 onChange={this.handleInputChange}
                 name="officeId"
-                className="form-control text-center" id="testForm"
+                className="form-control text-center" id="officeIdForm"
               >
                 <option value={6}>U.S. Senator</option>
                 <option value={5}>U.S. Representative</option>

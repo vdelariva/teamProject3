@@ -1,0 +1,11 @@
+.address {
+  margin: 0 0 0 0;
+}
+
+@media only screen and (max-width: 600px) {
+  .address {
+      background-color:  #3d70b0;
+      padding: 10px 0 5px 0;
+      color: white;
+  }
+}
