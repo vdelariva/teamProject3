@@ -44,7 +44,7 @@ const FooterPage = () => (
   </Container>
   <div className="footer-copyright text-center py-3">
     <Container fluid>
-      VOTE NOW Team Project 3  |  <a href="https://github.com/lindnerdesign/teamProject3">Github <i className="fab fa-github-square"></i></a>
+      VOTE NOW Team Project 3  |  <a href="https://github.com/vdelariva/voteNow">Github <i className="fab fa-github-square"></i></a>
     </Container>
   </div>
 </Footer>
