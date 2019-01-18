@@ -9,8 +9,6 @@ import NavBar from "../components/NavBar";
 import {Row, Col, Button} from "react-bootstrap";
 import './Home.css';
 
-const zipLength = 5;
-
 class Home extends Component {
   stageId = "G"; // Set to General Election
   username = "";
@@ -269,28 +267,28 @@ class Home extends Component {
   // Functional Methods
 
   // Remove duplicates from array
-  arrayUnique = function (arr) {
+  arrayUnique = arr => {
     return arr.filter(function(item, index){
       return arr.indexOf(item) >= index;
     });
   };
 
+  // Event Handlers
+  
   handleInputChange = event => {
-    if(event.target.name ==='officeId'){
-        if (this.state.zip.length === zipLength) {
-        const { name, value } = event.target;
-        this.setState({
-          [name]: value
-        },
-        ()=>{this.getCandidateByOffice()});
-      } 
-    }else{
-      const { name, value } = event.target;
-      this.setState({
-        [name]: value
-      });
-    }
-  };
+    const { name, value } = event.target;
+    this.setState({
+      [name]: value
+    })
+  }
+
+  handleOfficeChange = event => {
+    const { name, value } = event.target;
+    this.setState({
+      [name]: value
+    },
+    this.getCandidateByOffice);
+  }
 
   handleFormSubmit = event => {
     event.preventDefault();
@@ -348,7 +346,7 @@ class Home extends Component {
               <h3 htmlFor="officeIdForm" className="text-center">Select Contest</h3>
               <select 
                 value={this.state.officeId}
-                onChange={this.handleInputChange}
+                onChange={this.handleOfficeChange}
                 name="officeId"
                 className="form-control text-center" id="officeIdForm"
               >
